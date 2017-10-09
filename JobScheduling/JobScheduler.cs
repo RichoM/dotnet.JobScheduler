@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace JobScheduler
+namespace JobScheduling
 {
-    public class Scheduler
+    public class JobScheduler
     {
         private class Job
         {
@@ -15,7 +15,7 @@ namespace JobScheduler
             public Action Action { get; set; }
         }
 
-        private static Scheduler instance = new Scheduler();
+        private static JobScheduler instance = new JobScheduler();
 
         public static int JobCount { get { return instance.GetJobCount(); } }
         public static bool IsRunning { get { return instance.GetTimerEnabled(); } }
@@ -94,7 +94,7 @@ namespace JobScheduler
         private object locker = new object();
         private HashSet<Job> jobs = new HashSet<Job>();
 
-        private Scheduler()
+        private JobScheduler()
         {
             timer = new Timer();
             timer.Interval = 1; // TODO(Richo): Interval should be configurable

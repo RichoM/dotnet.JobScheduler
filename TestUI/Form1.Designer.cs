@@ -1,4 +1,4 @@
-﻿namespace JobScheduler
+﻿namespace JobScheduling
 {
     partial class Form1
     {

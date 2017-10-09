@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JobScheduler
+namespace JobScheduling
 {
     public partial class Form1 : Form
     {
@@ -20,7 +20,7 @@ namespace JobScheduler
         private void Form1_Load(object sender, EventArgs e)
         {
             Log("Welcome!");
-            Scheduler.Start();
+            JobScheduler.Start();
         }
 
         private void Log(string str)
@@ -41,14 +41,14 @@ namespace JobScheduler
         private void updateTimer_Tick(object sender, EventArgs e)
         {
             Text = string.Format("Job Scheduler ({0}, {1} jobs)",
-                Scheduler.IsRunning ? "Running..." : "Stopped", Scheduler.JobCount);
+                JobScheduler.IsRunning ? "Running..." : "Stopped", JobScheduler.JobCount);
         }
 
         private void inFutureButton_Click(object sender, EventArgs e)
         {
             int ms = int.Parse(InputBox.Ask("Milliseconds into the future?", "1000"));
             Log("Before!");
-            Scheduler.ExecuteAfter(ms.Milliseconds(), () =>
+            JobScheduler.ExecuteAfter(ms.Milliseconds(), () =>
             {
                 Log("Future!");
             });
@@ -61,7 +61,7 @@ namespace JobScheduler
             int i = 0;
             char letter = letters[0];
             letters = letters.Skip(1).ToArray();
-            Scheduler.Loop(() =>
+            JobScheduler.Loop(() =>
             {
                 Log("{0} - {1}", letter, ++i);
             });
@@ -69,17 +69,17 @@ namespace JobScheduler
 
         private void startButton_Click(object sender, EventArgs e)
         {
-            Scheduler.Start();
+            JobScheduler.Start();
         }
 
         private void stopButton_Click(object sender, EventArgs e)
         {
-            Scheduler.Stop();
+            JobScheduler.Stop();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Scheduler.Flush();
+            JobScheduler.Flush();
         }
 
         private void loopEveryButton_Click(object sender, EventArgs e)
@@ -89,7 +89,7 @@ namespace JobScheduler
             int i = 0;
             char letter = letters[0];
             letters = letters.Skip(1).ToArray();
-            Scheduler.LoopEvery(ms.Milliseconds(), () =>
+            JobScheduler.LoopEvery(ms.Milliseconds(), () =>
             {
                 Log("{0}{0} - {1}", letter, ++i);
             });
@@ -105,7 +105,7 @@ namespace JobScheduler
             int i = 0;
             Log("Starting retry (times: {0}, delay: {1} ms, successRate: {2})", 
                 times, delay, successRate);
-            Scheduler.Retry(times, delay.Milliseconds(), () =>
+            JobScheduler.Retry(times, delay.Milliseconds(), () =>
             {
                 try
                 {
