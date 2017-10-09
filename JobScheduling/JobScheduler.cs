@@ -40,20 +40,29 @@ namespace JobScheduling
             instance.ClearJobs();
         }
 
-        public static Promise ExecuteAfter(TimeSpan deltaTime, Action action)
+        public static IPromise<T> ExecuteAfter<T>(TimeSpan deltaTime, Func<T> function)
         {
-            Promise promise = new Promise();
+            var promise = new Promise<T>();
             Job job = new Job()
             {
                 ExecutionTime = DateTime.UtcNow + deltaTime,
                 Action = () =>
                 {
-                    action();
-                    promise.Resolve();
+                    var value = function();
+                    promise.Resolve(value);
                 }
             };
             instance.AddJob(job);
             return promise;
+        }
+
+        public static IPromise ExecuteAfter(TimeSpan deltaTime, Action action)
+        {
+            return ExecuteAfter<object>(deltaTime, () =>
+            {
+                action();
+                return null;
+            });
         }
         public static void LoopEvery(TimeSpan deltaTime, Action action)
         {
@@ -74,14 +83,23 @@ namespace JobScheduling
             LoopEvery(new TimeSpan(), action);
         }
 
-        public static Promise Retry(int times, TimeSpan delay, Action action)
+        public static IPromise<T> Retry<T>(int times, TimeSpan delay, Func<T> function)
         {
-            Promise promise = new Promise();
-            InternalRetry(times, 0.Milliseconds(), delay, action, promise);
+            var promise = new Promise<T>();
+            InternalRetry(times, 0.Milliseconds(), delay, function, promise);
             return promise;
         }
 
-        private static void InternalRetry(int times, TimeSpan deltaTime, TimeSpan delay, Action action, Promise promise)
+        public static IPromise Retry(int times, TimeSpan delay, Action action)
+        {
+            return Retry<object>(times, delay, () =>
+            {
+                action();
+                return null;
+            });
+        }
+
+        private static void InternalRetry<T>(int times, TimeSpan deltaTime, TimeSpan delay, Func<T> function, Promise<T> promise)
         {
             Job job = new Job()
             {
@@ -90,15 +108,16 @@ namespace JobScheduling
                 {
                     try
                     {
+                        T value = default(T);
                         if (times > 0)
                         {
-                            action();
+                            value = function();
                         }
-                        promise.Resolve();
+                        promise.Resolve(value);
                     }
                     catch
                     {
-                        InternalRetry(times - 1, delay, delay, action, promise);
+                        InternalRetry(times - 1, delay, delay, function, promise);
                     }
                 }
             };

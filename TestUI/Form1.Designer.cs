@@ -38,6 +38,8 @@
             this.updateTimer = new System.Windows.Forms.Timer(this.components);
             this.loopEveryButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.inFutureReturnButton = new System.Windows.Forms.Button();
+            this.retryReturnButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // inFutureButton
@@ -55,10 +57,11 @@
             this.logTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.logTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.logTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.logTextBox.Location = new System.Drawing.Point(171, 13);
             this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
+            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.logTextBox.Size = new System.Drawing.Size(641, 481);
             this.logTextBox.TabIndex = 1;
             // 
@@ -127,11 +130,33 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // inFutureReturnButton
+            // 
+            this.inFutureReturnButton.Location = new System.Drawing.Point(15, 278);
+            this.inFutureReturnButton.Name = "inFutureReturnButton";
+            this.inFutureReturnButton.Size = new System.Drawing.Size(151, 27);
+            this.inFutureReturnButton.TabIndex = 8;
+            this.inFutureReturnButton.Text = "In future return...";
+            this.inFutureReturnButton.UseVisualStyleBackColor = true;
+            this.inFutureReturnButton.Click += new System.EventHandler(this.inFutureReturnButton_Click);
+            // 
+            // retryReturnButton
+            // 
+            this.retryReturnButton.Location = new System.Drawing.Point(15, 311);
+            this.retryReturnButton.Name = "retryReturnButton";
+            this.retryReturnButton.Size = new System.Drawing.Size(151, 27);
+            this.retryReturnButton.TabIndex = 9;
+            this.retryReturnButton.Text = "Retry return...";
+            this.retryReturnButton.UseVisualStyleBackColor = true;
+            this.retryReturnButton.Click += new System.EventHandler(this.retryReturnButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(824, 506);
+            this.Controls.Add(this.retryReturnButton);
+            this.Controls.Add(this.inFutureReturnButton);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.loopEveryButton);
             this.Controls.Add(this.button1);
@@ -159,6 +184,8 @@
         private System.Windows.Forms.Timer updateTimer;
         private System.Windows.Forms.Button loopEveryButton;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button inFutureReturnButton;
+        private System.Windows.Forms.Button retryReturnButton;
     }
 }
 

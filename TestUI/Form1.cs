@@ -132,5 +132,65 @@ namespace JobScheduling
                 Log("FINISHED!");
             });
         }
+
+        private void inFutureReturnButton_Click(object sender, EventArgs e)
+        {
+            int ms = int.Parse(InputBox.Ask("Milliseconds into the future?", "1000"));
+            Log("Before!");
+            var promise = JobScheduler
+                .ExecuteAfter(ms.Milliseconds(), () =>
+                {
+                    Log("Future!");
+                    return Environment.TickCount;
+                })
+                .Then(ign => Log("FINISHED 1!"))
+                .Then(ign => Log("FINISHED 2!"));
+            Log("After!");
+            Thread.Sleep(ms * 2);
+            promise.Then(ticks => Log("FINISHED 3! {0}", ticks));
+        }
+
+        private void retryReturnButton_Click(object sender, EventArgs e)
+        {
+            int times = int.Parse(InputBox.Ask("Times?", "3"));
+            int delay = int.Parse(InputBox.Ask("Delay ms?", "1000"));
+            double successRate = double.Parse(InputBox.Ask("Success rate?", "0.5"));
+
+            Random rnd = new Random();
+            int i = 0;
+            Log("Starting retry (times: {0}, delay: {1} ms, successRate: {2})",
+                times, delay, successRate);
+            var promise = JobScheduler.Retry(times, delay.Milliseconds(), () =>
+            {
+                try
+                {
+                    Log("Attempt: {0}", ++i);
+                    var randomValue = rnd.NextDouble();
+                    if (randomValue < successRate)
+                    {
+                        Log("SUCCESS!");
+                        return randomValue;
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+                catch
+                {
+                    Log("FAIL :(");
+                    throw;
+                }
+            });
+            promise.Then(val =>
+            {
+                Log("VALUE: {0}", val);
+            });
+            promise.Then(() =>
+            {
+                Log("FINISHED!");
+            });
+            
+        }
     }
 }

@@ -6,49 +6,17 @@ using System.Threading.Tasks;
 
 namespace JobScheduling
 {
-    public class Promise
+    public interface IPromise
     {
-        private object locker = new object();
-        private bool isResolved = false;
-        private Queue<Action> actions = new Queue<Action>();
-
-        public bool IsResolved { get { return isResolved; } }
-
-        public Promise Then(Action action)
-        {
-            lock (locker)
-            {
-                actions.Enqueue(action);
-                ExecuteActions();
-                return this;
-            }
-        }
-
-        public void Resolve()
-        {
-            lock (locker)
-            {
-                if (isResolved)
-                {
-                    throw new Exception("Promise already resolved");
-                }
-                isResolved = true;
-                ExecuteActions();
-            }
-        }
-
-        private void ExecuteActions()
-        {
-            if (!isResolved) return;
-            while (actions.Count > 0)
-            {
-                Action action = actions.Dequeue();
-                action();
-            }
-        }
+        IPromise Then(Action action);
     }
 
-    public class Promise<T>
+    public interface IPromise<T> : IPromise
+    {
+        IPromise<T> Then(Action<T> action);
+    }
+    
+    public class Promise<T> : IPromise<T>, IPromise
     {
         private object locker = new object();
         private bool isResolved = false;
@@ -58,7 +26,7 @@ namespace JobScheduling
         public bool IsResolved { get { return isResolved; } }
         public T Value { get { return value; } }
 
-        public Promise<T> Then(Action<T> action)
+        public IPromise<T> Then(Action<T> action)
         {
             lock (locker)
             {
@@ -68,7 +36,12 @@ namespace JobScheduling
             }
         }
 
-        public void Resolve(T value)
+        public IPromise Then(Action action)
+        {
+            return Then(ign => action());
+        }
+
+        public void Resolve(T value = default(T))
         {
             lock (locker)
             {
