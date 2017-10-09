@@ -40,14 +40,20 @@ namespace JobScheduling
             instance.ClearJobs();
         }
 
-        public static void ExecuteAfter(TimeSpan deltaTime, Action action)
+        public static Promise ExecuteAfter(TimeSpan deltaTime, Action action)
         {
+            Promise promise = new Promise();
             Job job = new Job()
             {
                 ExecutionTime = DateTime.UtcNow + deltaTime,
-                Action = action
+                Action = () =>
+                {
+                    action();
+                    promise.Resolve();
+                }
             };
             instance.AddJob(job);
+            return promise;
         }
         public static void LoopEvery(TimeSpan deltaTime, Action action)
         {
@@ -68,12 +74,14 @@ namespace JobScheduling
             LoopEvery(new TimeSpan(), action);
         }
 
-        public static void Retry(int times, TimeSpan delay, Action action)
+        public static Promise Retry(int times, TimeSpan delay, Action action)
         {
-            InternalRetry(times, 0.Milliseconds(), delay, action);
+            Promise promise = new Promise();
+            InternalRetry(times, 0.Milliseconds(), delay, action, promise);
+            return promise;
         }
 
-        private static void InternalRetry(int times, TimeSpan deltaTime, TimeSpan delay, Action action)
+        private static void InternalRetry(int times, TimeSpan deltaTime, TimeSpan delay, Action action, Promise promise)
         {
             Job job = new Job()
             {
@@ -86,10 +94,11 @@ namespace JobScheduling
                         {
                             action();
                         }
+                        promise.Resolve();
                     }
                     catch
                     {
-                        InternalRetry(times - 1, delay, delay, action);
+                        InternalRetry(times - 1, delay, delay, action, promise);
                     }
                 }
             };

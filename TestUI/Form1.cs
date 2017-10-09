@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -48,11 +49,13 @@ namespace JobScheduling
         {
             int ms = int.Parse(InputBox.Ask("Milliseconds into the future?", "1000"));
             Log("Before!");
-            JobScheduler.ExecuteAfter(ms.Milliseconds(), () =>
-            {
-                Log("Future!");
-            });
+            var promise = JobScheduler
+                .ExecuteAfter(ms.Milliseconds(), () => Log("Future!"))
+                .Then(() => Log("FINISHED 1!"))
+                .Then(() => Log("FINISHED 2!"));
             Log("After!");
+            Thread.Sleep(ms * 2);
+            promise.Then(() => Log("FINISHED 3!"));
         }
 
         char[] letters = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".ToCharArray();
@@ -124,6 +127,9 @@ namespace JobScheduling
                     Log("FAIL :(");
                     throw;
                 }
+            }).Then(()=>
+            {
+                Log("FINISHED!");
             });
         }
     }
