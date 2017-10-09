@@ -11,7 +11,7 @@ namespace JobScheduling
     {
         private class Job
         {
-            public double ExecutionTime { get; set; }
+            public DateTime ExecutionTime { get; set; }
             public Action Action { get; set; }
         }
 
@@ -37,7 +37,7 @@ namespace JobScheduling
         {
             Job job = new Job()
             {
-                ExecutionTime = Environment.TickCount + deltaTime.TotalMilliseconds,
+                ExecutionTime = DateTime.UtcNow + deltaTime,
                 Action = action
             };
             instance.AddJob(job);
@@ -46,7 +46,7 @@ namespace JobScheduling
         {
             Job job = new Job()
             {
-                ExecutionTime = Environment.TickCount + deltaTime.TotalMilliseconds,
+                ExecutionTime = DateTime.UtcNow + deltaTime,
                 Action = () =>
                 {
                     action();
@@ -70,7 +70,7 @@ namespace JobScheduling
         {
             Job job = new Job()
             {
-                ExecutionTime = Environment.TickCount + deltaTime.TotalMilliseconds,
+                ExecutionTime = DateTime.UtcNow + deltaTime,
                 Action = () =>
                 {
                     try
@@ -148,7 +148,7 @@ namespace JobScheduling
             List<Job> toRemove = new List<Job>();
             try
             {
-                int now = Environment.TickCount;
+                DateTime now = DateTime.UtcNow;
                 IEnumerable<Job> toExecute;
                 lock (locker)
                 {
