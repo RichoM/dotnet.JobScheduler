@@ -27,7 +27,7 @@ namespace JobScheduling
         {
             Invoke((Action)delegate
             {
-                logTextBox.AppendText(string.Format("{0}) ", DateTime.Now));
+                logTextBox.AppendText(string.Format("{0} /// ", DateTime.Now.ToString("o")));
                 logTextBox.AppendText(str);
                 logTextBox.AppendText(Environment.NewLine);
             });

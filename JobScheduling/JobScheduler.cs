@@ -9,10 +9,17 @@ namespace JobScheduling
 {
     public class JobScheduler
     {
-        private class Job
+        private class Job : IJob
         {
             public DateTime ExecutionTime { get; set; }
             public Action Action { get; set; }
+
+            public bool ShouldRunNow(DateTime now)
+            {
+                return now > ExecutionTime;
+            }
+
+            public void Run() { Action(); }
         }
 
         private static JobScheduler instance = new JobScheduler();
@@ -92,7 +99,7 @@ namespace JobScheduling
         private Timer timer;
         private bool running = false;
         private object locker = new object();
-        private HashSet<Job> jobs = new HashSet<Job>();
+        private HashSet<IJob> jobs = new HashSet<IJob>();
 
         private JobScheduler()
         {
@@ -145,19 +152,19 @@ namespace JobScheduling
             // INFO(Richo): I use the "running" flag to avoid simultaneous executions
             if (running) return;
             running = true;
-            List<Job> toRemove = new List<Job>();
+            List<IJob> toRemove = new List<IJob>();
             try
             {
                 DateTime now = DateTime.UtcNow;
-                IEnumerable<Job> toExecute;
+                IEnumerable<IJob> toExecute;
                 lock (locker)
                 {
-                    toExecute = jobs.Where(job => now > job.ExecutionTime);
+                    toExecute = jobs.Where(job => job.ShouldRunNow(now));
                 }
-                foreach (Job job in toExecute)
+                foreach (IJob job in toExecute)
                 {
                     toRemove.Add(job);
-                    job.Action();
+                    job.Run();
                 }
             }
             catch
