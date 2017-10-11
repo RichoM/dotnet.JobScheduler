@@ -40,6 +40,11 @@ namespace JobScheduling
             instance.ClearJobs();
         }
 
+        public static void Schedule(IJob job)
+        {
+            instance.AddJob(job);
+        }
+
         public static IPromise<T> ExecuteAfter<T>(TimeSpan deltaTime, Func<T> function)
         {
             var promise = new Promise<T>();
@@ -52,7 +57,7 @@ namespace JobScheduling
                     promise.Resolve(value);
                 }
             };
-            instance.AddJob(job);
+            Schedule(job);
             return promise;
         }
 
@@ -75,7 +80,7 @@ namespace JobScheduling
                     LoopEvery(deltaTime, action);
                 }
             };
-            instance.AddJob(job);
+            Schedule(job);
         }
 
         public static void Loop(Action action)
@@ -121,7 +126,7 @@ namespace JobScheduling
                     }
                 }
             };
-            instance.AddJob(job);
+            Schedule(job);
         }
 
         private Timer timer;
@@ -167,11 +172,15 @@ namespace JobScheduling
             }
         }
 
-        private void AddJob(Job job)
+        private void AddJob(IJob job)
         {
             lock (locker)
             {
                 jobs.Add(job);
+                if (!timer.Enabled)
+                {
+                    timer.Enabled = true;
+                }
             }
         }
 
@@ -204,6 +213,10 @@ namespace JobScheduling
                 lock (locker)
                 {
                     jobs.RemoveWhere(job => toRemove.Contains(job));
+                    if (jobs.Count == 0)
+                    {
+                        timer.Enabled = false;
+                    }
                 }
                 running = false;
             }
