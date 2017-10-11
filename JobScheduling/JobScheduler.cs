@@ -111,19 +111,20 @@ namespace JobScheduling
                 ExecutionTime = DateTime.UtcNow + deltaTime,
                 Action = () =>
                 {
-                    try
+                    T value = default(T);
+                    if (times > 0)
                     {
-                        T value = default(T);
-                        if (times > 0)
+                        try
                         {
                             value = function();
                         }
-                        promise.Resolve(value);
+                        catch
+                        {
+                            InternalRetry(times - 1, delay, delay, function, promise);
+                            return;
+                        }
                     }
-                    catch
-                    {
-                        InternalRetry(times - 1, delay, delay, function, promise);
-                    }
+                    promise.Resolve(value);
                 }
             };
             Schedule(job);
