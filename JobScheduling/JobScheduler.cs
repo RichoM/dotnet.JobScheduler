@@ -196,7 +196,7 @@ namespace JobScheduling
                 IEnumerable<IJob> toExecute;
                 lock (locker)
                 {
-                    toExecute = jobs.Where(job => job.ShouldRunNow(now));
+                    toExecute = jobs.Where(job => job.ShouldRunNow(now)).ToArray();
                 }
                 foreach (IJob job in toExecute)
                 {
@@ -204,9 +204,10 @@ namespace JobScheduling
                     job.Run();
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 // TODO(Richo): Log exceptions!
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
