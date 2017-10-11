@@ -120,8 +120,12 @@ namespace JobScheduling
                         }
                         catch
                         {
-                            InternalRetry(times - 1, delay, delay, function, promise);
-                            return;
+                            times--;
+                            if (times > 0)
+                            {
+                                InternalRetry(times, delay, delay, function, promise);
+                                return;
+                            }
                         }
                     }
                     promise.Resolve(value);
