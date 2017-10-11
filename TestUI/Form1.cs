@@ -190,7 +190,15 @@ namespace JobScheduling
             {
                 Log("FINISHED!");
             });
-            
+            promise.Then(() =>
+            {
+                Console.Beep();
+            });
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            logTextBox.Clear();
         }
     }
 }
