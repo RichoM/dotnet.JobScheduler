@@ -130,7 +130,7 @@ namespace JobScheduling
         }
 
         private Timer timer;
-        private bool running = false;
+        private volatile bool running = false;
         private object locker = new object();
         private HashSet<IJob> jobs = new HashSet<IJob>();
 
@@ -186,9 +186,9 @@ namespace JobScheduling
 
         private void OnTimer(object sender, ElapsedEventArgs e)
         {
-            // INFO(Richo): I use the "running" flag to avoid simultaneous executions
             if (running) return;
             running = true;
+            
             List<IJob> toRemove = new List<IJob>();
             try
             {
@@ -213,11 +213,9 @@ namespace JobScheduling
                 lock (locker)
                 {
                     jobs.RemoveWhere(job => toRemove.Contains(job));
-                    if (jobs.Count == 0)
-                    {
-                        timer.Enabled = false;
-                    }
+                    timer.Enabled = jobs.Count > 0;
                 }
+                
                 running = false;
             }
         }
