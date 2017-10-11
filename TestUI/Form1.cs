@@ -49,13 +49,16 @@ namespace JobScheduling
         {
             int ms = int.Parse(InputBox.Ask("Milliseconds into the future?", "1000"));
             Log("Before!");
-            var promise = JobScheduler
-                .ExecuteAfter(ms.Milliseconds(), () => Log("Future!"))
-                .Then(() => Log("FINISHED 1!"))
-                .Then(() => Log("FINISHED 2!"));
-            Log("After!");
-            Thread.Sleep(ms * 2);
-            promise.Then(() => Log("FINISHED 3!"));
+            Task.Run(() =>
+            {
+                var promise = JobScheduler
+                    .ExecuteAfter(ms.Milliseconds(), () => Log("Future!"))
+                    .Then(() => Log("FINISHED 1!"))
+                    .Then(() => Log("FINISHED 2!"));
+                Log("After!");
+                Task.Delay(ms * 3).Wait();
+                promise.Then(() => Log("FINISHED 3!"));
+            });
         }
 
         char[] letters = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".ToCharArray();
@@ -262,6 +265,26 @@ namespace JobScheduling
                     }
                 });
             }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            int begin = Environment.TickCount;
+            int action = 0;
+            int end = 0;
+            JobScheduler.Retry(1, 10.Seconds(), () =>
+            {
+                action = Environment.TickCount;
+                throw new Exception("FAIL!");
+            }).Then(() =>
+            {
+                end = Environment.TickCount;
+            }).Then(()=>
+            {
+                Log("BEGIN:  {0}", begin);
+                Log("ACTION: {0}", action);
+                Log("END:    {0}", end);
+            });
         }
     }
 }
