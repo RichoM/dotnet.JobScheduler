@@ -219,7 +219,7 @@ namespace JobScheduling
                     {
                         Log("{0}) Attempt: {1}", index, ++attempts);
                         var randomValue = rnd.NextDouble();
-                        Thread.Sleep((int)(randomValue * 2500));
+                        Thread.Sleep((int)(randomValue * 500));
                         if (randomValue < 0.05)
                         {
                             Log("{0}) SUCCESS!", index);
@@ -240,10 +240,25 @@ namespace JobScheduling
                 {
                     Log("{0}) VALUE: {1}", index, val);
                     if (val) { successes++; } else { errors++; }
-                    count++;
-                    if (count >= total)
+
+                    try
                     {
-                        Log("SUCCESSES: {0}, ERRORS: {1}", successes, errors);
+                        if (val)
+                        {
+                            Thread.Sleep((int)(rnd.NextDouble() * 500));
+                        }
+                        else if (rnd.NextDouble() > 0.5)
+                        {
+                            throw new Exception("TU VIEJA!");
+                        }
+                    }
+                    finally
+                    {
+                        count++;
+                        if (count >= total)
+                        {
+                            Log("SUCCESSES: {0}, ERRORS: {1}", successes, errors);
+                        }
                     }
                 });
             }
