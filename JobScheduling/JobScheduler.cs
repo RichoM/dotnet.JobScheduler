@@ -193,6 +193,12 @@ namespace JobScheduling
             lock (locker)
             {
                 jobs.Add(job);
+
+                double interval = job.TimeToRun(DateTime.UtcNow).TotalMilliseconds;
+                if (interval < timer.Interval)
+                {
+                    timer.Interval = interval <= 0 ? 1 : interval;
+                }
                 if (!timer.Enabled)
                 {
                     timer.Enabled = true;
