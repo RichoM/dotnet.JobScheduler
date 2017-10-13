@@ -297,7 +297,7 @@ namespace JobScheduling
             {
                 Log("{0}) Starting...", index);
                 int attempts = 0;
-                var promise = JobScheduler.Retry(3, 1.Minutes(), () =>
+                var promise = JobScheduler.Retry(3, 15.Minutes(), () =>
                 {
                     try
                     {
