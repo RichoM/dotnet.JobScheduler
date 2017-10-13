@@ -286,5 +286,82 @@ namespace JobScheduling
                 Log("END:    {0}", end);
             });
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Random rnd = new Random();
+            int total = 100;
+            var promises = Enumerable.Range(0, total).Select(index =>
+            {
+                Log("{0}) Starting...", index);
+                int attempts = 0;
+                var promise = JobScheduler.Retry(3, 1.Minutes(), () =>
+                {
+                    try
+                    {
+                        Log("{0}) Attempt: {1}", index, ++attempts);
+                        var randomValue = rnd.NextDouble();
+                        Thread.Sleep((int)(randomValue * 500));
+                        if (randomValue < 0.05)
+                        {
+                            Log("{0}) SUCCESS!", index);
+                            return true;
+                        }
+                        else
+                        {
+                            throw new Exception();
+                        }
+                    }
+                    catch
+                    {
+                        Log("{0}) FAIL :(", index);
+                        throw;
+                    }
+                });
+                promise.Then(val =>
+                {
+                    Log("{0}) VALUE: {1}", index, val);
+                    if (val)
+                    {
+                        Thread.Sleep((int)(rnd.NextDouble() * 500));
+                    }
+                    else if (rnd.NextDouble() > 0.5)
+                    {
+                        throw new Exception("TU VIEJA!");
+                    }
+                });
+                return promise;
+            });
+            Promise.All(promises).Then(results =>
+            {
+                int successes = results.Count(each => each == true);
+                int errors = results.Count(each => each == false);
+                Log("SUCCESSES: {0}, ERRORS: {1}", successes, errors);
+            });
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            var rnd = new Random();
+            int begin = Environment.TickCount;
+            Log("BEGIN AT {0}", begin);
+            int count = 0;
+            var promises = Enumerable.Range(0, 1000).Select(index =>
+            {
+                var delay = rnd.Next(60).Seconds();
+                return JobScheduler.ExecuteAfter(delay, () =>
+                {
+                    Interlocked.Increment(ref count);
+                    Log("{2}) RUN: {0} (delay: {1})", index, delay,
+                        Interlocked.CompareExchange(ref count, 0, 0));
+                });
+            });
+            Promise.All(promises).Then(() =>
+            {
+                int end = Environment.TickCount;
+                Log("END AT {0}", end);
+                Log("TIME TO RUN: {0} ms", end - begin);
+            });
+        }
     }
 }

@@ -43,6 +43,8 @@
             this.clearButton = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // inFutureButton
@@ -61,11 +63,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.logTextBox.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.logTextBox.Location = new System.Drawing.Point(171, 13);
+            this.logTextBox.Location = new System.Drawing.Point(172, 13);
             this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTextBox.Size = new System.Drawing.Size(641, 481);
+            this.logTextBox.Size = new System.Drawing.Size(950, 665);
             this.logTextBox.TabIndex = 1;
             // 
             // loopButton
@@ -155,7 +157,7 @@
             // 
             // clearButton
             // 
-            this.clearButton.Location = new System.Drawing.Point(15, 467);
+            this.clearButton.Location = new System.Drawing.Point(15, 651);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(151, 27);
             this.clearButton.TabIndex = 10;
@@ -183,11 +185,33 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(15, 420);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(151, 27);
+            this.button5.TabIndex = 13;
+            this.button5.Text = "Multiple lasting retries (All)";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(15, 453);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(151, 27);
+            this.button6.TabIndex = 14;
+            this.button6.Text = "Test Promise.All()";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(824, 506);
+            this.ClientSize = new System.Drawing.Size(1134, 690);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.clearButton);
@@ -225,6 +249,8 @@
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
     }
 }
 
