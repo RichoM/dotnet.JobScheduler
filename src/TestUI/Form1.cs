@@ -291,13 +291,14 @@ namespace JobScheduling
 
         private void button5_Click(object sender, EventArgs e)
         {
+            int minutes = int.Parse(InputBox.Ask("Minutes?", "1"));
             Random rnd = new Random();
             int total = 100;
             var promises = Enumerable.Range(0, total).Select(index =>
             {
                 Log("{0}) Starting...", index);
                 int attempts = 0;
-                var promise = JobScheduler.Retry(3, 15.Minutes(), () =>
+                var promise = JobScheduler.Retry(3, minutes.Minutes(), () =>
                 {
                     try
                     {
