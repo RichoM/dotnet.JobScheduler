@@ -14,6 +14,11 @@ namespace JobScheduling
             public DateTime ExecutionTime { get; set; }
             public Action Action { get; set; }
 
+            public TimeSpan TimeToRun(DateTime now)
+            {
+                return ExecutionTime - now;
+            }
+
             public bool ShouldRunNow(DateTime now)
             {
                 return now > ExecutionTime;
@@ -26,6 +31,7 @@ namespace JobScheduling
 
         public static int JobCount { get { return instance.GetJobCount(); } }
         public static bool IsRunning { get { return instance.GetTimerEnabled(); } }
+        public static double Interval { get { return instance.GetTimerInterval(); } }
 
         public static void Start()
         {
@@ -142,7 +148,7 @@ namespace JobScheduling
         private JobScheduler()
         {
             timer = new Timer();
-            timer.Interval = 1; // TODO(Richo): Interval should be configurable
+            timer.Interval = 1;
             timer.Elapsed += new ElapsedEventHandler(OnTimer);
         }
 
@@ -157,6 +163,11 @@ namespace JobScheduling
         public bool GetTimerEnabled()
         {
             return timer.Enabled;
+        }
+
+        public double GetTimerInterval()
+        {
+            return timer.Interval;
         }
 
         private void StartTimer()
@@ -195,6 +206,7 @@ namespace JobScheduling
             running = true;
             
             List<IJob> toRemove = new List<IJob>();
+            TimeSpan min = 1.Hours();
             try
             {
                 DateTime now = DateTime.UtcNow;
@@ -219,7 +231,25 @@ namespace JobScheduling
                 lock (locker)
                 {
                     jobs.RemoveWhere(job => toRemove.Contains(job));
-                    timer.Enabled = jobs.Count > 0;
+                    if (jobs.Count > 0)
+                    {
+                        DateTime now = DateTime.UtcNow;
+                        foreach (IJob job in jobs)
+                        {
+                            TimeSpan timeToRun = job.TimeToRun(now);
+                            if (timeToRun < min)
+                            {
+                                min = timeToRun;
+                            }
+                        }
+                        double interval = min.TotalMilliseconds;
+                        timer.Interval = interval <= 0 ? 1 : interval;
+                    }
+                    else
+                    {
+                        timer.Interval = 1;
+                        timer.Enabled = false;
+                    }
                 }
                 
                 running = false;

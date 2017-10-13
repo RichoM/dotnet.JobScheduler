@@ -8,6 +8,7 @@ namespace JobScheduling
 {
     public interface IJob
     {
+        TimeSpan TimeToRun(DateTime now);
         bool ShouldRunNow(DateTime now);
         void Run();
     }
