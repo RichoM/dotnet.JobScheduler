@@ -114,8 +114,7 @@ namespace JobScheduling
                 }
                 catch (Exception ex)
                 {
-                    // TODO(Richo): Log Exception!
-                    Console.WriteLine(ex.ToString());
+                    JobScheduler.HandleError(ex);
                 }
             }
         }

@@ -29,6 +29,12 @@ namespace JobScheduling
 
         private static JobScheduler instance = new JobScheduler();
 
+        public static event Action<Exception> OnError = ex => { };
+        internal static void HandleError(Exception ex)
+        {
+            OnError(ex);
+        }
+
         public static int JobCount { get { return instance.GetJobCount(); } }
         public static bool IsRunning { get { return instance.GetTimerEnabled(); } }
         public static double Interval { get { return instance.GetTimerInterval(); } }
@@ -229,8 +235,7 @@ namespace JobScheduling
             }
             catch (Exception ex)
             {
-                // TODO(Richo): Log exceptions!
-                Console.WriteLine(ex.ToString());
+                HandleError(ex);
             }
             finally
             {
@@ -261,6 +266,5 @@ namespace JobScheduling
                 running = false;
             }
         }
-
     }
 }

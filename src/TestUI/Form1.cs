@@ -21,7 +21,13 @@ namespace JobScheduling
         private void Form1_Load(object sender, EventArgs e)
         {
             Log("Welcome!");
-            JobScheduler.Start();
+            JobScheduler.OnError += JobScheduler_OnError;
+        }
+
+        private void JobScheduler_OnError(Exception ex)
+        {
+            Log("ERROR:");
+            Log(ex.ToString());
         }
 
         private void Log(string str)
