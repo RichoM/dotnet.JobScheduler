@@ -41,8 +41,10 @@ namespace JobScheduling
 
         private void updateTimer_Tick(object sender, EventArgs e)
         {
-            Text = string.Format("Job Scheduler ({0}, {1} jobs)",
-                JobScheduler.IsRunning ? "Running..." : "Stopped", JobScheduler.JobCount);
+            Text = string.Format("Job Scheduler ({0}, {1} jobs, interval: {2} ms)",
+                JobScheduler.IsRunning ? "Running..." : "Stopped", 
+                JobScheduler.JobCount,
+                JobScheduler.Interval);
         }
 
         private void inFutureButton_Click(object sender, EventArgs e)
