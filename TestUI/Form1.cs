@@ -363,5 +363,27 @@ namespace JobScheduling
                 Log("TIME TO RUN: {0} ms", end - begin);
             });
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Interval = 1000;
+            int begin = Environment.TickCount;
+            var rnd = new Random();
+            timer.Elapsed += (ign1, ign2) =>
+            {
+                int tick = Environment.TickCount;
+                Log("Interval: {0}, Tick: {1}", timer.Interval, tick - begin);
+
+                if (timer.Interval < 100) timer.Interval *= 2;
+                else if (timer.Interval > 10000) timer.Interval /= 2;
+                else
+                {
+                    timer.Interval = rnd.NextDouble() > 0.5 ? timer.Interval * 2 : timer.Interval / 2;
+                }
+                begin = Environment.TickCount;
+            };
+            timer.Start();
+        }
     }
 }
